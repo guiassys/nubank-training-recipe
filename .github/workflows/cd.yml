@@ -107,7 +107,7 @@ jobs:
             -v "${{ github.workspace }}:/usr/src" \
             sonarsource/sonar-scanner-cli:latest \
             -Dsonar.projectKey="nubank-training-recipe-${TARGET_ENV}" \
-            -Dsonar.projectName="Nubank Training (${TARGET_ENV^^})" \
+            -Dsonar.projectName="Nubank Training Recipe (${TARGET_ENV^^})" \
             -Dsonar.sources=/usr/src/src/main/java \
             -Dsonar.java.binaries=/usr/src/target/classes \
             -Dsonar.coverage.jacoco.xmlReportPaths=/usr/src/target/site/jacoco/jacoco.xml \
