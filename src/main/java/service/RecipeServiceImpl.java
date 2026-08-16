@@ -6,7 +6,6 @@ import model.Ingredient;
 import model.RatingSummary;
 import model.Recipe;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -176,7 +175,16 @@ public class RecipeServiceImpl implements RecipeService {
 
         double averageRating = (double) totalRating / evalsInWindow.size();
 
-        return new EvaluationReport(recipeId, evalsInWindow.size(), totalRating, averageRating, minRating, maxRating, window.firstKey(), window.lastKey());
+        return EvaluationReport.builder()
+                .recipeId(recipeId)
+                .evaluationCount(evalsInWindow.size())
+                .totalRating(totalRating)
+                .averageRating(averageRating)
+                .minimumRating(minRating)
+                .maximumRating(maxRating)
+                .firstEvaluationTimestamp(window.firstKey())
+                .lastEvaluationTimestamp(window.lastKey())
+                .build();
     }
 
     @Override
