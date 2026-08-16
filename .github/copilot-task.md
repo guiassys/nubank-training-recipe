@@ -7,10 +7,10 @@ Read carefully the following file:
 ### Task code: 01
 
 ### Problem to be solved
-// TODO
+// Implemente all instruction of specification_level_1.md file.  
 
 ### Analyze the files carefully
-// TODO
+\\wsl.localhost\Ubuntu\home\guiassys\devtools\repos\nubank-training-recipe\doc\specification\specification_level_1.md
 
 ### ATTENTION! Strictly follow the rules below:
 
@@ -23,5 +23,10 @@ Read carefully the following file:
 
 1. Perform a file-by-file analysis to understand the application. Move to the next file only after my authorization.
 2. After completing the analysis of all files, perform the following steps:
-   - // TODO
-3. At the end, // TODO
+   - Create the main entity in `\\wsl.localhost\Ubuntu\home\guiassys\devtools\repos\nubank-training-recipe\src\main\java\model`
+   - Create exceptions in `\\wsl.localhost\Ubuntu\home\guiassys\devtools\repos\nubank-training-recipe\src\main\java\exceptions`
+   - Create interface in `\\wsl.localhost\Ubuntu\home\guiassys\devtools\repos\nubank-training-recipe\src\main\java\service`
+   - Create implementation to interfaces in `\\wsl.localhost\Ubuntu\home\guiassys\devtools\repos\nubank-training-recipe\src\main\java\service`
+   - Create tests in `\\wsl.localhost\Ubuntu\home\guiassys\devtools\repos\nubank-training-recipe\src\test\java\model`
+   - Create tests in `\\wsl.localhost\Ubuntu\home\guiassys\devtools\repos\nubank-training-recipe\src\test\java\service`
+3. At the end, the level 1 specification neet to be complete using SOLID and Designer Patterns.
