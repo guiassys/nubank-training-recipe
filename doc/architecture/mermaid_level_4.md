@@ -1,8 +1,0 @@
-# Mermaid diagrams
-
-## Title
-```mermaid
-
-```
-
----

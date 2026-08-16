@@ -86,10 +86,14 @@ public class RecipeServiceImpl implements RecipeService {
             return false;
         }
         Evaluation evaluation = new Evaluation(evaluationId, recipeId, rating, timestamp);
-        if (evaluations.putIfAbsent(evaluationId, evaluation) != null) {
-            return false;
+        // This block ensures that we only add the evaluation to the recipe's internal state
+        // if it was successfully added to the global evaluations map.
+        synchronized (recipe) {
+            if (evaluations.putIfAbsent(evaluationId, evaluation) != null) {
+                return false;
+            }
+            recipe.addEvaluation(evaluation);
         }
-        recipe.addEvaluation(evaluation);
         return true;
     }
 
@@ -147,7 +151,11 @@ public class RecipeServiceImpl implements RecipeService {
             return EvaluationReport.EMPTY;
         }
 
-        NavigableMap<Long, List<Evaluation>> window = recipe.getEvaluationHistory().subMap(startTimestamp, true, endTimestamp, true);
+        NavigableMap<Long, List<Evaluation>> window;
+        synchronized (recipe) {
+            window = recipe.getEvaluationHistory().subMap(startTimestamp, true, endTimestamp, true);
+        }
+
         if (window.isEmpty()) {
             return EvaluationReport.EMPTY;
         }
