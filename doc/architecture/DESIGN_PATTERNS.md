@@ -1,8 +1,15 @@
 # Design Patterns Used
 
-// TODO Add description
+This document outlines the key design patterns and architectural principles applied in the Recipe Management System. The implementation follows best practices to ensure the system is robust, maintainable, and scalable.
 
-| Pattern name | Used description |
+| Pattern name | Description of Use |
 |:-------------|:-----------------|
-| **Facade**   | //TODO           |
-
+| **Facade** | The `RecipeServiceImpl` class acts as a Facade. It provides a simplified, high-level interface to the system's core functionalities (e.g., `createRecipe`, `evaluateRecipe`, `topRated`). This pattern hides the underlying complexity of managing different data structures (`recipes` map, `evaluations` map, `Recipe` internal state) and provides a unified entry point for all client interactions. |
+| **Singleton** (Conceptual) | The `RecipeServiceImpl` is managed as a singleton instance within the application's lifecycle. While not explicitly enforced with a traditional singleton pattern, its single-instance nature ensures that all operations share the same in-memory data stores (`recipes` and `evaluations` maps), providing a centralized and consistent state management. |
+| **Repository** (Conceptual) | The `RecipeServiceImpl` also embodies the Repository pattern. It abstracts the data storage and retrieval logic, providing an object-oriented view of the underlying data. Methods like `getRecipe` or `createRecipe` allow the rest of the application to interact with domain objects without needing to know how they are stored (in this case, in `ConcurrentHashMap`s). |
+| **Strategy** | The `Comparator` objects used in the `topRated` and `topEvaluated` methods are an application of the Strategy pattern. They define a family of algorithms (different ranking criteria) and encapsulate each one, making them interchangeable. This allows the sorting logic to be defined and modified independently of the ranking methods themselves. |
+| **Value Object** | The `RatingSummary` and `EvaluationReport` classes are implemented as immutable Value Objects. They represent descriptive aspects of the domain and are defined by their attributes, not a unique identity. Their immutability makes them inherently thread-safe and simplifies data transfer between layers. |
+| **Aggregate** (Domain-Driven Design) | The `Recipe` class is designed as an Aggregate Root. It is the main entity that encapsulates and enforces the consistency of its internal state, including its collection of `Ingredient` objects and its `evaluationHistory`. All modifications to a recipe's state are performed through methods on the `Recipe` object itself, ensuring its invariants are always maintained. |
+| **Factory** (Conceptual) | The constructors of the domain objects (`Recipe`, `Ingredient`, `Evaluation`) act as simple factories. They are responsible for creating valid objects by enforcing invariants (e.g., non-blank IDs, valid rating ranges) upon instantiation, throwing an `IllegalArgumentException` if a rule is violated. |
+| **Observer** (Conceptual) | The process of adding an `Evaluation` and updating the `Recipe`'s aggregate statistics (`totalRating`, `evaluationCount`) can be seen as a simplified, synchronous form of the Observer pattern. The `Recipe` object "observes" the addition of a new evaluation and updates its own state in response. |
+| **Proxy** (Defensive Copy) | In the `getEvaluationHistory` method, a new `TreeMap` is created and returned instead of the original. This is a form of a Defensive Copy Proxy, which protects the original data structure from external modification and provides a safe, isolated snapshot for the client to use, which is crucial in a concurrent environment. |
