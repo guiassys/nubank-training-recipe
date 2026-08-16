@@ -1,9 +1,9 @@
-package service;
+package com.guiassys.nubank.training.recipe.service;
 
-import model.EvaluationReport;
-import model.Ingredient;
-import model.RatingSummary;
-import model.Recipe;
+import com.guiassys.nubank.training.recipe.model.EvaluationReport;
+import com.guiassys.nubank.training.recipe.model.Ingredient;
+import com.guiassys.nubank.training.recipe.model.RatingSummary;
+import com.guiassys.nubank.training.recipe.model.Recipe;
 
 import java.util.List;
 

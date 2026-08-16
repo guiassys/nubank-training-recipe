@@ -1,4 +1,4 @@
-package model;
+package com.guiassys.nubank.training.recipe.model;
 
 import java.util.ArrayList;
 import java.util.Collections;
