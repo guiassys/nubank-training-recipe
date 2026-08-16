@@ -1,5 +1,7 @@
-package service;
+package com.guiassys.nubank.training.recipe.service;
 
+import com.guiassys.nubank.training.recipe.service.RecipeService;
+import com.guiassys.nubank.training.recipe.service.RecipeServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

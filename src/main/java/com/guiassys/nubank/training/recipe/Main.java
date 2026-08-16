@@ -1,3 +1,5 @@
+package com.guiassys.nubank.training.recipe;
+
 public class Main {
 
     private static final String SIMBOL = "*";

@@ -1,4 +1,4 @@
-package model;
+package com.guiassys.nubank.training.recipe.model;
 
 import lombok.Builder;
 import lombok.Getter;
