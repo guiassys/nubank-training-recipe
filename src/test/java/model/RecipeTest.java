@@ -84,17 +84,22 @@ class RecipeTest {
     }
 
     @Test
-    void addEvaluation_shouldUpdateAverageRating() {
-        recipe.addEvaluation(5);
+    void addEvaluation_shouldUpdateAverageRatingAndHistory() {
+        Evaluation eval1 = new Evaluation("e1", "recipe1", 5, 1000L);
+        recipe.addEvaluation(eval1);
         assertEquals(5.0, recipe.getAverageRating());
-        recipe.addEvaluation(3);
+        assertEquals(1, recipe.getEvaluationHistory().size());
+
+        Evaluation eval2 = new Evaluation("e2", "recipe1", 3, 2000L);
+        recipe.addEvaluation(eval2);
         assertEquals(4.0, recipe.getAverageRating());
+        assertEquals(2, recipe.getEvaluationHistory().size());
     }
 
     @Test
     void getEvaluationCount_shouldReturnCorrectCount() {
         assertEquals(0, recipe.getEvaluationCount());
-        recipe.addEvaluation(5);
+        recipe.addEvaluation(new Evaluation("e1", "recipe1", 5, 1000L));
         assertEquals(1, recipe.getEvaluationCount());
     }
 }

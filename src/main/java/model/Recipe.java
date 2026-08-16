@@ -5,7 +5,9 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.NavigableMap;
 import java.util.Objects;
+import java.util.TreeMap;
 
 public class Recipe {
 
@@ -14,6 +16,7 @@ public class Recipe {
     private final Map<String, Ingredient> ingredients;
     private long totalRating;
     private int evaluationCount;
+    private final NavigableMap<Long, List<Evaluation>> evaluationHistory;
 
     public Recipe(String recipeId, String name) {
         if (recipeId == null || recipeId.trim().isEmpty()) {
@@ -27,6 +30,7 @@ public class Recipe {
         this.ingredients = new LinkedHashMap<>();
         this.totalRating = 0;
         this.evaluationCount = 0;
+        this.evaluationHistory = new TreeMap<>();
     }
 
     public String getRecipeId() {
@@ -62,9 +66,12 @@ public class Recipe {
         return Collections.unmodifiableList(new ArrayList<>(ingredients.values()));
     }
 
-    public synchronized void addEvaluation(int rating) {
-        this.totalRating += rating;
+    public synchronized void addEvaluation(Evaluation evaluation) {
+        this.totalRating += evaluation.getRating();
         this.evaluationCount++;
+        this.evaluationHistory
+                .computeIfAbsent(evaluation.getTimestamp(), k -> new ArrayList<>())
+                .add(evaluation);
     }
 
     public double getAverageRating() {
@@ -76,6 +83,10 @@ public class Recipe {
 
     public int getEvaluationCount() {
         return evaluationCount;
+    }
+
+    public NavigableMap<Long, List<Evaluation>> getEvaluationHistory() {
+        return evaluationHistory;
     }
 
     @Override
