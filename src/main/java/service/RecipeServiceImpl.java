@@ -1,14 +1,17 @@
 package service;
 
 import model.Evaluation;
+import model.EvaluationReport;
 import model.Ingredient;
 import model.RatingSummary;
 import model.Recipe;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.NavigableMap;
 import java.util.PriorityQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -86,7 +89,7 @@ public class RecipeServiceImpl implements RecipeService {
         if (evaluations.putIfAbsent(evaluationId, evaluation) != null) {
             return false;
         }
-        recipe.addEvaluation(rating);
+        recipe.addEvaluation(evaluation);
         return true;
     }
 
@@ -125,6 +128,81 @@ public class RecipeServiceImpl implements RecipeService {
         return topK.stream()
                 .sorted(comparator.reversed())
                 .map(Recipe::getRecipeId)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public RatingSummary ratingInWindow(String recipeId, long startTimestamp, long endTimestamp) {
+        EvaluationReport report = evaluationReport(recipeId, startTimestamp, endTimestamp);
+        return new RatingSummary(report.getEvaluationCount(), report.getAverageRating());
+    }
+
+    @Override
+    public EvaluationReport evaluationReport(String recipeId, long startTimestamp, long endTimestamp) {
+        if (startTimestamp < 0 || endTimestamp < 0 || startTimestamp > endTimestamp) {
+            throw new IllegalArgumentException("Invalid timestamp range.");
+        }
+        Recipe recipe = getRecipe(recipeId);
+        if (recipe == null) {
+            return EvaluationReport.EMPTY;
+        }
+
+        NavigableMap<Long, List<Evaluation>> window = recipe.getEvaluationHistory().subMap(startTimestamp, true, endTimestamp, true);
+        if (window.isEmpty()) {
+            return EvaluationReport.EMPTY;
+        }
+
+        List<Evaluation> evalsInWindow = window.values().stream().flatMap(List::stream).collect(Collectors.toList());
+        if (evalsInWindow.isEmpty()) {
+            return EvaluationReport.EMPTY;
+        }
+
+        long totalRating = 0;
+        int minRating = 6;
+        int maxRating = 0;
+        for (Evaluation eval : evalsInWindow) {
+            totalRating += eval.getRating();
+            if (eval.getRating() < minRating) minRating = eval.getRating();
+            if (eval.getRating() > maxRating) maxRating = eval.getRating();
+        }
+
+        double averageRating = (double) totalRating / evalsInWindow.size();
+
+        return new EvaluationReport(recipeId, evalsInWindow.size(), totalRating, averageRating, minRating, maxRating, window.firstKey(), window.lastKey());
+    }
+
+    @Override
+    public List<String> topEvaluated(int k, long startTimestamp, long endTimestamp) {
+        if (k <= 0) {
+            return Collections.emptyList();
+        }
+
+        Map<String, EvaluationReport> reports = new ConcurrentHashMap<>();
+        recipes.keySet().forEach(recipeId -> {
+            EvaluationReport report = evaluationReport(recipeId, startTimestamp, endTimestamp);
+            if (report.getEvaluationCount() > 0) {
+                reports.put(recipeId, report);
+            }
+        });
+
+        Comparator<EvaluationReport> comparator = Comparator.comparing(EvaluationReport::getEvaluationCount)
+                .thenComparing(EvaluationReport::getAverageRating)
+                .thenComparing(EvaluationReport::getRecipeId, Comparator.reverseOrder());
+
+        PriorityQueue<EvaluationReport> topK = new PriorityQueue<>(k, comparator);
+
+        for (EvaluationReport report : reports.values()) {
+            if (topK.size() < k) {
+                topK.offer(report);
+            } else if (comparator.compare(report, topK.peek()) > 0) {
+                topK.poll();
+                topK.offer(report);
+            }
+        }
+
+        return topK.stream()
+                .sorted(comparator.reversed())
+                .map(EvaluationReport::getRecipeId)
                 .collect(Collectors.toList());
     }
 }

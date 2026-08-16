@@ -1,5 +1,6 @@
 package service;
 
+import model.EvaluationReport;
 import model.Ingredient;
 import model.RatingSummary;
 import model.Recipe;
@@ -41,4 +42,22 @@ public interface RecipeService {
     RatingSummary getRating(String recipeId);
 
     List<String> topRated(int k);
+
+    RatingSummary ratingInWindow(
+        String recipeId,
+        long startTimestamp,
+        long endTimestamp
+    );
+
+    EvaluationReport evaluationReport(
+        String recipeId,
+        long startTimestamp,
+        long endTimestamp
+    );
+
+    List<String> topEvaluated(
+        int k,
+        long startTimestamp,
+        long endTimestamp
+    );
 }

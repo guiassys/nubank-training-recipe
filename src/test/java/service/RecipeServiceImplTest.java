@@ -1,5 +1,6 @@
 package service;
 
+import model.EvaluationReport;
 import model.RatingSummary;
 import model.Recipe;
 import org.junit.jupiter.api.BeforeEach;
@@ -137,18 +138,19 @@ class RecipeServiceImplTest {
         recipeService.createRecipe("recipe-a", "A"); // avg 4.5, 2 evals
         recipeService.evaluateRecipe("recipe-a", "e2", 5, 2L);
         recipeService.evaluateRecipe("recipe-a", "e3", 4, 3L);
-        
+
         recipeService.createRecipe("recipe-c", "C"); // avg 4.5, 1 eval
         recipeService.evaluateRecipe("recipe-c", "e4", 4, 4L);
-        recipeService.getRecipe("recipe-c").addEvaluation(5);
+        recipeService.evaluateRecipe("recipe-c", "e5", 5, 5L);
 
 
-        List<String> top2 = recipeService.topRated(2);
-        assertEquals(2, top2.size());
+        List<String> top2 = recipeService.topRated(3);
+        assertEquals(3, top2.size());
         assertEquals("recipe-b", top2.get(0)); // Higher avg rating
         assertEquals("recipe-a", top2.get(1)); // Same avg as C, but more evals
+        assertEquals("recipe-c", top2.get(2));
     }
-    
+
     @Test
     void topRated_shouldHandleTieBreakingWithId() {
         recipeService.createRecipe("recipe-b", "B"); // avg 5, 1 eval
@@ -161,5 +163,50 @@ class RecipeServiceImplTest {
         assertEquals(2, top2.size());
         assertEquals("recipe-a", top2.get(0)); // Lower recipeId
         assertEquals("recipe-b", top2.get(1));
+    }
+
+    @Test
+    void evaluationReport_shouldReturnCorrectReportForWindow() {
+        recipeService.createRecipe("r1", "R1");
+        recipeService.evaluateRecipe("r1", "e1", 3, 1000L);
+        recipeService.evaluateRecipe("r1", "e2", 5, 2000L);
+        recipeService.evaluateRecipe("r1", "e3", 1, 3000L);
+
+        EvaluationReport report = recipeService.evaluationReport("r1", 1000L, 2500L);
+        assertEquals(2, report.getEvaluationCount());
+        assertEquals(8, report.getTotalRating());
+        assertEquals(4.0, report.getAverageRating());
+        assertEquals(3, report.getMinimumRating());
+        assertEquals(5, report.getMaximumRating());
+        assertEquals(1000L, report.getFirstEvaluationTimestamp());
+        assertEquals(2000L, report.getLastEvaluationTimestamp());
+    }
+
+    @Test
+    void evaluationReport_shouldReturnEmptyReportForNoEvaluationsInWindow() {
+        recipeService.createRecipe("r1", "R1");
+        recipeService.evaluateRecipe("r1", "e1", 5, 1000L);
+        EvaluationReport report = recipeService.evaluationReport("r1", 2000L, 3000L);
+        assertEquals(EvaluationReport.EMPTY, report);
+    }
+
+    @Test
+    void topEvaluated_shouldReturnCorrectlyRankedRecipes() {
+        recipeService.createRecipe("r1", "R1"); // 2 evals in window
+        recipeService.evaluateRecipe("r1", "e1", 5, 1000L);
+        recipeService.evaluateRecipe("r1", "e2", 4, 1500L);
+
+        recipeService.createRecipe("r2", "R2"); // 3 evals in window
+        recipeService.evaluateRecipe("r2", "e3", 3, 1100L);
+        recipeService.evaluateRecipe("r2", "e4", 3, 1200L);
+        recipeService.evaluateRecipe("r2", "e5", 3, 1300L);
+        
+        recipeService.createRecipe("r3", "R3"); // 1 eval outside window
+        recipeService.evaluateRecipe("r3", "e6", 5, 3000L);
+
+        List<String> top = recipeService.topEvaluated(2, 1000L, 2000L);
+        assertEquals(2, top.size());
+        assertEquals("r2", top.get(0)); // More evaluations
+        assertEquals("r1", top.get(1));
     }
 }
