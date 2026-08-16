@@ -41,7 +41,7 @@ public class Recipe {
         return name;
     }
 
-    public boolean addIngredient(String ingredientId, int quantity) {
+    public synchronized boolean addIngredient(String ingredientId, int quantity) {
         if (ingredients.containsKey(ingredientId)) {
             return false;
         }
@@ -49,7 +49,7 @@ public class Recipe {
         return true;
     }
 
-    public boolean updateIngredient(String ingredientId, int quantity) {
+    public synchronized boolean updateIngredient(String ingredientId, int quantity) {
         Ingredient ingredient = ingredients.get(ingredientId);
         if (ingredient == null) {
             return false;
@@ -58,11 +58,11 @@ public class Recipe {
         return true;
     }
 
-    public boolean removeIngredient(String ingredientId) {
+    public synchronized boolean removeIngredient(String ingredientId) {
         return ingredients.remove(ingredientId) != null;
     }
 
-    public List<Ingredient> getIngredients() {
+    public synchronized List<Ingredient> getIngredients() {
         return Collections.unmodifiableList(new ArrayList<>(ingredients.values()));
     }
 
@@ -74,19 +74,19 @@ public class Recipe {
                 .add(evaluation);
     }
 
-    public double getAverageRating() {
+    public synchronized double getAverageRating() {
         if (evaluationCount == 0) {
             return 0.0;
         }
         return (double) totalRating / evaluationCount;
     }
 
-    public int getEvaluationCount() {
+    public synchronized int getEvaluationCount() {
         return evaluationCount;
     }
 
-    public NavigableMap<Long, List<Evaluation>> getEvaluationHistory() {
-        return evaluationHistory;
+    public synchronized NavigableMap<Long, List<Evaluation>> getEvaluationHistory() {
+        return new TreeMap<>(evaluationHistory);
     }
 
     @Override
