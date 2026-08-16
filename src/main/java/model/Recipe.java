@@ -12,6 +12,8 @@ public class Recipe {
     private final String recipeId;
     private final String name;
     private final Map<String, Ingredient> ingredients;
+    private long totalRating;
+    private int evaluationCount;
 
     public Recipe(String recipeId, String name) {
         if (recipeId == null || recipeId.trim().isEmpty()) {
@@ -23,6 +25,8 @@ public class Recipe {
         this.recipeId = recipeId;
         this.name = name;
         this.ingredients = new LinkedHashMap<>();
+        this.totalRating = 0;
+        this.evaluationCount = 0;
     }
 
     public String getRecipeId() {
@@ -58,6 +62,22 @@ public class Recipe {
         return Collections.unmodifiableList(new ArrayList<>(ingredients.values()));
     }
 
+    public synchronized void addEvaluation(int rating) {
+        this.totalRating += rating;
+        this.evaluationCount++;
+    }
+
+    public double getAverageRating() {
+        if (evaluationCount == 0) {
+            return 0.0;
+        }
+        return (double) totalRating / evaluationCount;
+    }
+
+    public int getEvaluationCount() {
+        return evaluationCount;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -77,6 +97,7 @@ public class Recipe {
                 "recipeId='" + recipeId + '\'' +
                 ", name='" + name + '\'' +
                 ", ingredients=" + ingredients.size() +
+                ", averageRating=" + getAverageRating() +
                 '}';
     }
 }
