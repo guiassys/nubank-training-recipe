@@ -1,6 +1,7 @@
 package service;
 
 import model.Ingredient;
+import model.RatingSummary;
 import model.Recipe;
 
 import java.util.List;
@@ -29,4 +30,15 @@ public interface RecipeService {
     );
 
     List<Ingredient> listIngredients(String recipeId);
+
+    boolean evaluateRecipe(
+        String recipeId,
+        String evaluationId,
+        int rating,
+        long timestamp
+    );
+
+    RatingSummary getRating(String recipeId);
+
+    List<String> topRated(int k);
 }

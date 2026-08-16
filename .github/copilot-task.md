@@ -7,10 +7,10 @@ Read carefully the following file:
 ### Task code: 01
 
 ### Problem to be solved
-// Implemente all instruction of specification_level_1.md file.  
+// Implemente all instruction of specification_level_2.md file.  
 
 ### Analyze the files carefully
-\\wsl.localhost\Ubuntu\home\guiassys\devtools\repos\nubank-training-recipe\doc\specification\specification_level_1.md
+\\wsl.localhost\Ubuntu\home\guiassys\devtools\repos\nubank-training-recipe\doc\specification\specification_level_2.md
 
 ### ATTENTION! Strictly follow the rules below:
 
@@ -29,4 +29,4 @@ Read carefully the following file:
    - Create implementation to interfaces in `\\wsl.localhost\Ubuntu\home\guiassys\devtools\repos\nubank-training-recipe\src\main\java\service`
    - Create tests in `\\wsl.localhost\Ubuntu\home\guiassys\devtools\repos\nubank-training-recipe\src\test\java\model`
    - Create tests in `\\wsl.localhost\Ubuntu\home\guiassys\devtools\repos\nubank-training-recipe\src\test\java\service`
-3. At the end, the level 1 specification neet to be complete using SOLID and Designer Patterns.
+3. At the end, the level 2 specification needs to be complete using SOLID and Designer Patterns.

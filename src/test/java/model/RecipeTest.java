@@ -77,4 +77,24 @@ class RecipeTest {
         var ingredients = recipe.getIngredients();
         assertThrows(UnsupportedOperationException.class, () -> ingredients.add(new Ingredient("ing2", 200)));
     }
+
+    @Test
+    void getAverageRating_shouldReturnZeroForNoEvaluations() {
+        assertEquals(0.0, recipe.getAverageRating());
+    }
+
+    @Test
+    void addEvaluation_shouldUpdateAverageRating() {
+        recipe.addEvaluation(5);
+        assertEquals(5.0, recipe.getAverageRating());
+        recipe.addEvaluation(3);
+        assertEquals(4.0, recipe.getAverageRating());
+    }
+
+    @Test
+    void getEvaluationCount_shouldReturnCorrectCount() {
+        assertEquals(0, recipe.getEvaluationCount());
+        recipe.addEvaluation(5);
+        assertEquals(1, recipe.getEvaluationCount());
+    }
 }
