@@ -92,6 +92,10 @@ jobs:
         run: |
           mvn clean test
 
+      - name: 📦 Copy Project Dependencies
+        run: |
+          mvn dependency:copy-dependencies -DoutputDirectory=target/dependency
+
       # ------------------------------------------------------------------
       # Execute SonarQube Analysis
       # ------------------------------------------------------------------
@@ -110,6 +114,7 @@ jobs:
             -Dsonar.projectName="Nubank Training Recipe (${TARGET_ENV^^})" \
             -Dsonar.sources=/usr/src/src/main/java \
             -Dsonar.java.binaries=/usr/src/target/classes \
+            -Dsonar.java.libraries=/usr/src/target/dependency/*.jar \
             -Dsonar.coverage.jacoco.xmlReportPaths=/usr/src/target/site/jacoco/jacoco.xml \
             -Dsonar.host.url="${{ vars.SONAR_HOST_URL }}" \
             -Dsonar.token="${{ secrets.SONAR_TOKEN }}"
